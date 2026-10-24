@@ -1,33 +1,33 @@
-from utils.model_loader import ModelLoader
+from langgraph.graph.state import CompiledStateGraph
+from langchain.agents import create_agent
+
 from prompt_library.prompt import SYSTEM_PROMPT
-from langgraph.graph import StateGraph, MessagesState, END, START
-from langgraph.prebuilt import ToolNode, tools_condition
+from tools.calculator_tool import calculate
+from tools.currency_conversion_tools import convert_currency
+from tools.place_search_tool import search_places
+from tools.weather_info_tool import get_current_weather, get_weather_forecast
+from tools.web_search_tool import search_web
+from utils.model_loader import ModelLoader
 
-from tools.weather_info_tool import WeatherInfoTool
-from tools.place_search_tool import PlaceSearchTool
-from tools.calculator_tool import CalculatorTool
-from tools.currency_conversion_tools import CurrencyConverterTool
 
-class GraphBuilder():
-    def __init__(self):
-        self.tools = []
+class GraphBuilder:
+    def __init__(self) -> None:
+        self.tools = [
+            get_current_weather,
+            get_weather_forecast,
+            search_places,
+            search_web,
+            calculate,
+            convert_currency,
+        ]
         self.system_prompt = SYSTEM_PROMPT
-    
-    def agent_function(self, state:MessagesState):
-        user_question =
-        input_question = 
-    
-    def build_graph(self):
-        graph_builder = StateGraph(MessagesState)
-        
-        graph_builder.add_node("agent", self.agent_function)
-        graph_builder.add_node("tools", ToolNode(tools=self.tools))
-        graph_builder.add_edge(START, "agent")
-        graph_builder.add_conditional_edges("agent", tools_condition)
-        graph_builder.add_edge("tools", "agent")
-        graph_builder.add_edge("agent", END)
-        
-        self.graph = graph_builder.compile()
-        return self.graph
-    def __call__(self):
+
+    def build_graph(self) -> CompiledStateGraph:
+        return create_agent(
+            model=ModelLoader().load_llm(),
+            tools=self.tools,
+            system_prompt=self.system_prompt,
+        )
+
+    def __call__(self) -> CompiledStateGraph:
         return self.build_graph()

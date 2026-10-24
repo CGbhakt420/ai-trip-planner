@@ -1,4 +1,5 @@
-from ai_trip_planner import main
+from ai_trip_planner import main as cli_main
+from app import app
 
 if __name__ == "__main__":
-    main()
+    cli_main()
